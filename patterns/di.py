@@ -1,3 +1,4 @@
+from copy import copy
 from .builder import BuilderPatternMetaclass
 import inspect
 
@@ -6,14 +7,20 @@ class DIConfig(object):
     __metaclass__ = BuilderPatternMetaclass
     __meta_builder_prefix__ = 'bind'
 
-    def __init__(self):
-        self.mapping = {}
+    def __init__(self, preconfig={}):
+        self.__mapping = {} 
+        self.__mapping.update(**preconfig)
+        self._frozen = False
 
     def bind(self, name, implementation):
-        self.mapping[name] = implementation
+        if not self._frozen:
+            self.__mapping[name] = implementation
+            return self
+        else:
+            return DIConfig(preconfig=copy(self.mapping))
 
     def inject(self, name):
-        val = self.mapping[name]
+        val = self.__mapping[name]
         kwargs = {}
         if inspect.isclass(val):
             args = []
@@ -23,7 +30,7 @@ class DIConfig(object):
                 for each in f_args:
                     if each == 'self':
                         continue
-                    if each in self.mapping:
+                    if each in self.__mapping:
                         args.append(self.inject(each))
 
                 if len(f_args) < len(args):
@@ -35,4 +42,8 @@ class DIConfig(object):
             return obj
         else:
             return val
+
+    def freeze(self):
+        self._frozen = True
+        return self
 

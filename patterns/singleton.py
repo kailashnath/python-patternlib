@@ -2,8 +2,19 @@
 class SingletonPatternMetaclass(type):
 
     def __call__(cls, *args, **kwargs):
-        if not hasattr(cls, '_single_inst'):
-            cls._single_inst = super(SingletonPatternMetaclass, cls).__call__(*args, **kwargs)
+        instance = None
+        if hasattr(cls, '_inst_cache'):
+            for inst, argcol in cls._inst_cache:
+                if argcol == (args, kwargs):
+                    instance = inst
+        else:
+            cls._inst_cache = []
 
-        return cls._single_inst
+        if not instance:
+            instance = super(SingletonPatternMetaclass, cls).__call__(*args, **kwargs)
+            print 'new instance'
+
+        cls._inst_cache.append([instance, (args, kwargs)])
+
+        return instance
 
