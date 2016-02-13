@@ -19,7 +19,7 @@ class DIConfig(object):
         else:
             return DIConfig(preconfig=copy(self.mapping))
 
-    def inject(self, name):
+    def inject(self, name, **overrides):
         val = self.__mapping[name]
         kwargs = {}
         if inspect.isclass(val):
@@ -30,15 +30,18 @@ class DIConfig(object):
                 for each in f_args:
                     if each == 'self':
                         continue
-                    if each in self.__mapping:
+
+                    if each in overrides:
+                        args.append(overrides[each])
+
+                    elif each in self.__mapping:
                         args.append(self.inject(each))
 
                 if len(f_args) < len(args):
                     args += argspec.defaults
 
             obj = val(*args, **kwargs)
-
-            obj._meta_injector = self
+            obj._injector = self
             return obj
         else:
             return val

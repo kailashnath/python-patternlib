@@ -12,7 +12,6 @@ class SingletonPatternMetaclass(type):
 
         if not instance:
             instance = super(SingletonPatternMetaclass, cls).__call__(*args, **kwargs)
-            print 'new instance'
 
         cls._inst_cache.append([instance, (args, kwargs)])
 
