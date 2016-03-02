@@ -1,6 +1,23 @@
 
 class SingletonPatternMetaclass(type):
+    '''
+    https://en.wikipedia.org/wiki/Singleton_pattern
 
+    ex:
+        class DbConnection(object):
+            __metaclass__ = SingletonPatternMetaclass
+
+            def __init__(self):
+                self.connection = open_connection()
+
+            def execute(self, query):
+                return self.connection.execute(query)
+
+        d_1 = DbConnection()
+        d_2 = DbConnection()
+
+        assert d_1 == d_2 # True
+    '''
     def __call__(cls, *args, **kwargs):
         instance = None
         if hasattr(cls, '_inst_cache'):

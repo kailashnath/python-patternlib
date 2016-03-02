@@ -3,6 +3,27 @@ from functools import wraps
 
 
 class BuilderPatternMetaclass(type):
+    '''
+    https://en.wikipedia.org/wiki/Builder_pattern
+
+    ex:
+        class Params(object):
+            __metaclass__ = BuilderPatternMetaclass
+
+            __meta_builder_prefix__ = 'use_'
+
+            def use_name(self, name):
+                self.name = name
+
+            def use_id(self, di):
+                self.id = id
+
+        params = Params()
+        params.use_name('builder').use_id(100)
+
+        print params.name, params.id => builder, 100
+
+    '''
 
     FUNC_PREFIX = 'set_'
 

@@ -4,6 +4,48 @@ import inspect
 
 
 class DIConfig(object):
+    '''
+    https://en.wikipedia.org/wiki/Dependency_injection
+
+    Use only if you are aware of the pros and cons of the pattern. If things are too straight forward
+    and not many types involved go ahead with param passing pattern
+
+    class DbConnection(object):
+        __metaclass__ = SingletonPatternMetaclass
+
+        def __init__(self, sqlConn):
+            self.connection = sqlConn
+
+        def execute(self, query):
+            return self.connection.execute('BEGIN %s END' % query)
+
+    diconfig = DIConfig().bind('sqlConn', sql2).bind('db', DbConnection)
+
+    conn = diconfig.inject('db')
+    conn.execute('select 1');
+
+    Now to test the class without modifying the construction and usage we override the injectable
+
+    class EchoSqlConnection(object):
+
+        def execute(self, query):
+            return query
+
+
+    diconfig.bind('sqlConn', EchoSqlConnection)
+
+    conn = diconfig.inject('db')
+    assert conn.execute('select 1') == 'BEGIN %s END' % query
+
+
+    .freeze():
+
+    Call this method on the config object if you choose to not mutate the defined
+    dependencies. It will be handle when you are exposing the config out of the scope of
+    the given module
+
+    '''
+
     __metaclass__ = BuilderPatternMetaclass
     __meta_builder_prefix__ = 'bind'
 
